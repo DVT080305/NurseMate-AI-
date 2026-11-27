@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
 
-const base = "http://127.0.0.1:3000";
+const base = process.env.TEST_BASE_URL || "http://127.0.0.1:3000";
 let server;
 let exitCode = 1;
 async function isReady() {

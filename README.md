@@ -132,7 +132,15 @@ git push -u origin main
 6. Nếu đổi biến môi trường, redeploy. Kiểm tra **Confirm Email** đã tắt. Đăng ký bằng email thử, kiểm tra vào dashboard ngay, đăng nhập lại, gửi câu hỏi ở cả bốn nhóm, tải lại lịch sử, đổi tên/xóa và kiểm tra một tài khoản khác không đọc được hội thoại.
 7. Kiểm tra Vercel logs và Supabase logs khi có lỗi; tuyệt đối không ghi khóa hoặc nội dung bệnh nhân vào log. Route chat đặt `maxDuration=60`; chọn giới hạn runtime tương ứng với gói Vercel của bạn, không tự bật dịch vụ trả phí.
 
-Không có repository từ xa hay deployment nào được tạo trong phiên này; GitHub CLI chưa đăng nhập, Supabase/Vercel chưa kết nối.
+## Chẩn đoán đăng nhập trên production
+
+Đăng nhập sử dụng `POST /api/auth/login` trên cùng domain. Máy chủ dùng Supabase SSR để xác thực email/mật khẩu và ghi cookie; JSON không trả access token. Proxy bỏ qua việc làm mới phiên cũ trước riêng API đăng nhập, còn các trang và API riêng tư vẫn xác minh người dùng bằng `getUser()`.
+
+- `GEMINI_MODEL` và `GEMINI_API_KEY` chỉ phục vụ chat, không tham gia đăng nhập. Thiếu model không gây lỗi đăng nhập.
+- `NEXT_PUBLIC_SUPABASE_URL` phải đúng Project URL, có hostname phân giải DNS được và khớp với publishable key. Site URL/Redirect URLs của Authentication không thay thế Project URL này.
+- Các biến `NEXT_PUBLIC_*` được nhúng vào bundle khi build. Sau khi sửa trên Vercel cần deployment mới; tải lại trang trên deployment cũ chưa đủ.
+- Runtime Logs có `[Auth] login_failed`, gồm giai đoạn, mã lỗi đã phân loại, mã/trạng thái Supabase được cho phép và mã yêu cầu ngẫu nhiên. Lỗi mạng có `[Auth] upstream_fetch_failed` với mã như `ENOTFOUND`; không log mật khẩu, email, URL yêu cầu, headers, API Key, token hoặc nội dung lỗi gốc.
+- Mỗi lần gửi HTTP tới Supabase phía máy chủ có thời gian chờ 12 giây; tổng thời gian làm mới phiên có thể dài hơn khi SDK thử lại. Lỗi ghi cookie trong route đăng nhập được báo lỗi thay vì giả định phiên đã lưu thành công; thuộc tính cookie do SDK cung cấp được giữ nguyên.
 
 ## Tài liệu đã đối chiếu
 

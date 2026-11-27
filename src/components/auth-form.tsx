@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, LoaderCircle, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { loginSchema, signupSchema } from "@/lib/validation";
+import { authFailure } from "@/lib/auth-errors";
 export function AuthForm({
   mode,
   configured,
@@ -30,8 +31,8 @@ export function AuthForm({
     }
     setBusy(true);
     try {
-      const client = createClient();
       if (mode === "register") {
+        const client = createClient();
         const values = signupSchema.parse(fields);
         const { data, error: authError } = await client.auth.signUp({
           email: values.email,
@@ -48,27 +49,24 @@ export function AuthForm({
           return;
         }
       } else {
-        const { error: authError } = await client.auth.signInWithPassword(
-          parsed.data,
-        );
-        if (authError) throw authError;
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(parsed.data),
+          signal: AbortSignal.timeout(30000),
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok)
+          throw Object.assign(new Error("AUTH_FAILED"), {
+            code: result?.code,
+            status: response.status,
+          });
       }
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      const code = (err as { code?: string }).code;
-      setError(
-        code === "invalid_credentials"
-          ? "Email hoặc mật khẩu chưa đúng."
-          : code === "email_not_confirmed"
-            ? "Supabase vẫn đang bật xác minh email. Vui lòng tắt Confirm Email trong Authentication → Sign In / Providers → Email rồi đăng nhập lại."
-            : code === "over_email_send_rate_limit" ||
-                code === "over_request_rate_limit"
-              ? "Bạn thao tác quá nhanh. Vui lòng thử lại sau."
-              : code === "weak_password"
-                ? "Mật khẩu chưa đủ mạnh. Hãy chọn mật khẩu khác."
-                : "Không thể xác thực. Vui lòng kiểm tra kết nối, thông tin tài khoản và cấu hình Supabase.",
-      );
+      setError(authFailure(err).message);
     } finally {
       setBusy(false);
     }

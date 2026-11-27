@@ -1,5 +1,16 @@
 # Kết quả kiểm thử NurseMate AI
 
+## Cập nhật lỗi đăng nhập production — 27/11/2026
+
+- Đã đối chiếu bundle đang chạy trên Vercel: Project URL Supabase khác bản local đã xác minh và hostname production trả lỗi DNS `ENOTFOUND`. Publishable key công khai khớp bản local. Không ghi các giá trị khóa vào báo cáo/log.
+- Deployment được kiểm tra chạy commit `869d4fb`, chưa có bản sửa API đăng nhập cùng nguồn. Vì bản đó gọi Supabase từ trình duyệt, lỗi đăng nhập không đi qua Runtime Logs của Vercel.
+- Đã sửa `NEXT_PUBLIC_SUPABASE_URL` trên Vercel cho Production/Preview và thêm `GEMINI_MODEL=gemini-3.6-flash`. Cần deployment mới để cấu hình public mới có hiệu lực. Thiếu Gemini model không ảnh hưởng xác thực.
+- `npm run typecheck`, `npm run lint`, `npm test` và `npm run build` đạt; 101 bài kiểm thử logic/route/cookie/proxy đạt. Kiểm thử mới xác nhận đăng nhập không cần biến Gemini, vẫn chặn yêu cầu khác nguồn, giữ thuộc tính cookie và không ghi bí mật vào log.
+- 15 ca trình duyệt cho luồng đăng nhập đã đạt trên desktop/tablet/mobile, gồm lỗi thông tin đăng nhập, mạng, timeout và phản hồi HTML 503/504. Các phản hồi được mô phỏng trong test cục bộ; không dùng tài khoản thật.
+- Chỉ dùng fixture cục bộ cho kiểm thử đăng nhập, theo lựa chọn của người dùng. Không tạo/xóa tài khoản hoặc thay mật khẩu trên Supabase; chưa xác nhận đăng nhập bằng tài khoản thật sau triển khai.
+
+## Báo cáo giai đoạn khởi tạo
+
 Ngày thực hiện: 27/11/2026. Môi trường Windows, Node.js 24.16.0, npm 11.13.0, Google Chrome cài trên máy. Không có `.env.local`, tài khoản Supabase hoặc khóa Gemini trong thư mục dự án.
 
 | Kiểm tra                               | Kết quả                                                                                    |

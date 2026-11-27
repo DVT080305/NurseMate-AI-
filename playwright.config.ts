@@ -4,7 +4,7 @@ export default defineConfig({
   fullyParallel: true,
   retries: 0,
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: process.env.TEST_BASE_URL || "http://127.0.0.1:3000",
     trace: "retain-on-failure",
     launchOptions: process.env.PLAYWRIGHT_CHROME_PATH
       ? { executablePath: process.env.PLAYWRIGHT_CHROME_PATH }

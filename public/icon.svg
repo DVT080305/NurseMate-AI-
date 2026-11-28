@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#147d72"/><path d="M10 33h12l6-15 9 28 6-13h11" fill="none" stroke="white" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="nm-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="50%" stop-color="#1D4ED8" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="nm-pulse" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#22D3EE" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="url(#nm-bg)" />
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="none" stroke="#22D3EE" stroke-opacity="0.35" stroke-width="1.5" />
+  <path d="M10 33h12l6-15 9 28 6-13h11" fill="none" stroke="url(#nm-pulse)" stroke-width="4.2" stroke-linejoin="round" stroke-linecap="round" />
+</svg>

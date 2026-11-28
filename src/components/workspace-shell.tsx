@@ -41,6 +41,7 @@ export function WorkspaceShell({
   const [editing, setEditing] = useState<Conversation | null>(null);
   const [deleting, setDeleting] = useState<Conversation | null>(null);
   const [title, setTitle] = useState("");
+
   async function changeConversation(action: "rename" | "delete") {
     const conversation = action === "rename" ? editing : deleting;
     if (!conversation || busy) return;
@@ -67,6 +68,7 @@ export function WorkspaceShell({
       setBusy(false);
     }
   }
+
   async function logout() {
     setBusy(true);
     setError("");
@@ -80,16 +82,17 @@ export function WorkspaceShell({
       setBusy(false);
     }
   }
+
   return (
     <div className="workspace">
       <div className="mobile-workspace-bar">
-        <Brand />
+        <Brand light />
         <button
-          className="icon-button"
+          className="icon-button icon-button-dark"
           aria-label="Mở menu"
           onClick={() => setOpen(true)}
         >
-          <Menu size={23} />
+          <Menu size={21} />
         </button>
       </div>
       {open && (
@@ -101,13 +104,13 @@ export function WorkspaceShell({
       )}
       <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
         <div className="sidebar-brand">
-          <Brand />
+          <Brand light />
           <button
-            className="icon-button mobile-close"
+            className="icon-button icon-button-dark mobile-close"
             aria-label="Đóng menu"
             onClick={() => setOpen(false)}
           >
-            <PanelLeftClose size={20} />
+            <PanelLeftClose size={19} />
           </button>
         </div>
         <Link
@@ -123,7 +126,7 @@ export function WorkspaceShell({
             className={path === "/dashboard" ? "active" : ""}
             onClick={() => setOpen(false)}
           >
-            <LayoutDashboard size={19} /> Tổng quan
+            <LayoutDashboard size={18} /> Tổng quan
           </Link>
           <span className="sidebar-label">GÓC HỌC TẬP</span>
           {categories.map((c) => (
@@ -132,7 +135,7 @@ export function WorkspaceShell({
               href={`/chat?category=${c.id}`}
               onClick={() => setOpen(false)}
             >
-              <CategoryIcon category={c.id} size={18} />
+              <CategoryIcon category={c.id} size={17} />
               {c.short}
             </Link>
           ))}
@@ -220,7 +223,7 @@ export function WorkspaceShell({
               disabled={busy}
               onClick={logout}
             >
-              <LogOut size={18} />
+              <LogOut size={17} />
             </button>
           </div>
         </div>
@@ -243,7 +246,7 @@ export function WorkspaceShell({
                 setDeleting(null);
               }}
             >
-              <X size={20} />
+              <X size={19} />
             </button>
             <h2 id="modal-title">
               {editing ? "Đổi tên hội thoại" : "Xóa cuộc hội thoại?"}

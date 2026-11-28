@@ -50,9 +50,11 @@ export function Chat({
   } | null>(null);
   const topic = getCategory(category);
   const lastId = messages.at(-1)?.id;
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [lastId, pending]);
+
   async function send(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const content = input.trim();
@@ -118,6 +120,7 @@ export function Chat({
       inFlight.current = false;
     }
   }
+
   async function loadOlder() {
     if (!conversationId || !messages.length || loadingOlder) return;
     setLoadingOlder(true);
@@ -136,6 +139,7 @@ export function Chat({
       setLoadingOlder(false);
     }
   }
+
   return (
     <main id="main" className="chat-page">
       <header className="chat-header">
@@ -147,66 +151,72 @@ export function Chat({
           >
             <ArrowLeft size={18} />
           </Link>
-          <span className={`round-icon ${topic.color}`}>
-            <CategoryIcon category={category} size={20} />
+          <span className={`round-icon round-icon-sm ${topic.color}`}>
+            <CategoryIcon category={category} size={18} />
           </span>
           <div>
             <h1>{conversation?.title || topic.short}</h1>
-            <small>Không gian học tập cùng NurseMate</small>
+            <small>Không gian học tập cùng NurseMate AI</small>
           </div>
         </div>
         <span className="chat-header-tag">
           <ShieldCheck size={15} /> Chỉ dành cho học tập
         </span>
       </header>
+
       <div className="chat-scroll">
         <div className="chat-content">
           {!messages.length && !pending ? (
             <div className="chat-welcome">
-              <span className="welcome-mark">
-                <Sparkles size={30} strokeWidth={1.4} />
+              <span className="welcome-mark" aria-hidden="true">
+                <Sparkles size={30} strokeWidth={1.7} />
               </span>
-              <span className="eyebrow">CÙNG HỌC, CÙNG TIẾN BỘ</span>
+              <span className="eyebrow">CÙNG HỌC · CÙNG TIẾN BỘ</span>
               <h2>
                 Một câu hỏi mới.
                 <br />
-                <span>Một điều bạn hiểu thêm.</span>
+                <span className="gradient-text">Một điều bạn hiểu thêm.</span>
               </h2>
               <p>
-                Tôi là NurseMate, người bạn đồng hành trong học tập.
+                Tôi là NurseMate, trợ lý học tập điều dưỡng ứng dụng AI.
                 <br />
-                Bạn muốn bắt đầu từ đâu hôm nay?
+                Chọn chủ đề bên dưới hoặc đặt câu hỏi để bắt đầu ngay.
               </p>
               {!conversationId && (
                 <div className="topic-tabs" aria-label="Chọn nhóm chức năng">
                   {categories.map((c) => (
                     <button
+                      type="button"
                       key={c.id}
                       className={category === c.id ? "selected" : ""}
                       onClick={() => setCategory(c.id)}
                     >
-                      <CategoryIcon category={c.id} size={16} />
+                      <CategoryIcon category={c.id} size={15} />
                       {c.title}
                     </button>
                   ))}
                 </div>
               )}
               <button
+                type="button"
                 className={`suggestion-card ${topic.color}`}
                 onClick={() => setInput(topic.prompt)}
               >
-                <CategoryIcon category={category} size={22} />
-                <span>
-                  <strong>Một gợi ý dành cho bạn</strong>
+                <span className={`round-icon round-icon-md ${topic.color}`}>
+                  <CategoryIcon category={category} size={20} />
+                </span>
+                <span className="suggestion-copy">
+                  <strong>Gợi ý câu hỏi cho mục {topic.short}</strong>
                   <small>{topic.prompt}</small>
                 </span>
-                <ArrowUpRight size={19} />
+                <ArrowUpRight size={19} className="suggestion-arrow" />
               </button>
             </div>
           ) : (
             <>
               {hasMore && (
                 <button
+                  type="button"
                   className="load-older text-link"
                   disabled={loadingOlder}
                   onClick={loadOlder}
@@ -254,14 +264,18 @@ export function Chat({
                     <span className="message-avatar">B</span>
                     <div className="message-body">
                       <span className="message-author">
-                        Bạn <small>· Chưa lưu</small>
+                        Bạn <small>· Đang gửi</small>
                       </span>
                       <p>{pending}</p>
                     </div>
                   </article>
                   <div role="status" className="thinking">
-                    <LoaderCircle size={18} className="spin" /> NurseMate đang
-                    chuẩn bị câu trả lời…
+                    <span className="typing-dots" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                    NurseMate đang chuẩn bị câu trả lời…
                   </div>
                 </>
               )}
@@ -270,6 +284,7 @@ export function Chat({
           <div ref={endRef} />
         </div>
       </div>
+
       <div className="chat-compose">
         <div className="compose-inner">
           {error && (
@@ -297,7 +312,7 @@ export function Chat({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={busy}
-              placeholder="Bạn muốn tìm hiểu điều gì?"
+              placeholder="Bạn muốn tìm hiểu điều gì về ngành điều dưỡng?"
               rows={2}
               maxLength={4000}
               onKeyDown={(e) => {
@@ -323,9 +338,9 @@ export function Chat({
                   disabled={busy || !input.trim()}
                 >
                   {busy ? (
-                    <LoaderCircle className="spin" size={19} />
+                    <LoaderCircle className="spin" size={18} />
                   ) : (
-                    <ArrowUp size={21} />
+                    <ArrowUp size={19} />
                   )}
                 </button>
               </div>
